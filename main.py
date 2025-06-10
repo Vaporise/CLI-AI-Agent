@@ -8,10 +8,16 @@ from google import genai
 
 client = genai.Client(api_key=api_key)
 
+from google.genai import types
+
+messages = [
+    types.Content(role="user", parts=[types.Part(text=user_prompt)])
+]
+
 
 
 if len(sys.argv) > 1:
-    query = client.models.generate_content(model= "gemini-2.0-flash-001", contents=sys.argv[1])
+    query = client.models.generate_content(model= "gemini-2.0-flash-001", contents=messages)
     print(query.text)
 
     try:
