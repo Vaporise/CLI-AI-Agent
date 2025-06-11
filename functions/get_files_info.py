@@ -15,19 +15,23 @@ def get_files_info(working_directory, directory=None):
       
     if os.path.isdir(directory) == False:
         return f'Error: "{directory}" is not a directory'
+    try:
+        files_in_directory = os.path.listdir(directory)
+
+        all_files = []
+        for file in files_in_directory:
+
+        
+            current_file_path = os.path.join(directory, file)
+            current_file_size = os.path.getsize(current_file_path)
+            current_file_is_dir = os.path.isdir(current_file_path)
     
-    files_in_directory = os.path.listdir(directory)
 
-    all_files = []
-    for file in files_in_directory:
-
-        current_file_path = os.path.join(directory, file)
-        current_file_size = os.path.getsize(current_file_path)
-        current_file_is_dir = os.path.isdir(current_file_path)
-
-        file_info = f"- {file}: file_size={current_file_size} bytes, is_dir={current_file_is_dir}"
-        all_files.append(f"{file_info}")
-    join_files = "\n".join(all_files)
-    return join_files
+            file_info = f"- {file}: file_size={current_file_size} bytes, is_dir={current_file_is_dir}"
+            all_files.append(f"{file_info}")
+        join_files = "\n".join(all_files)
+        return join_files
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
