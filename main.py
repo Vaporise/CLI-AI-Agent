@@ -24,6 +24,10 @@ messages = [
 query = client.models.generate_content(model= "gemini-2.0-flash-001", contents=messages)
 
 if len(sys.argv) > 1:
+
+    if user_prompt == "":
+        print("No prompt was entered")
+        sys.exit(1)
     
     if "--verbose" in sys.argv:
         print(f"User prompt: {user_prompt}")
