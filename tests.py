@@ -1,11 +1,5 @@
-from functions.get_files_info import get_files_info
+from functions.get_files_info import get_files_content
 
-dotcheck = get_files_info("calculator", ".")
-pkgcheck = get_files_info("calculator", "pkg")
-bincheck = get_files_info("calculator", "/bin")
-dotscheck = get_files_info("calculator", "../")
-
-print(dotcheck)
-print(pkgcheck)
-print(bincheck)
-print(dotscheck)
+get_file_content("calculator", "main.py")
+get_file_content("calculator", "pkg/calculator.py")
+get_file_content("calculator", "/bin/cat") (this should return an error string)
