@@ -1,5 +1,11 @@
-from functions.get_files_info import get_files_content
+from functions.get_file_content import get_file_content
 
-get_file_content("calculator", "main.py")
-get_file_content("calculator", "pkg/calculator.py")
-get_file_content("calculator", "/bin/cat") (this should return an error string)
+loremget = get_file_content("calculator", "lorem.txt")
+mainget = get_file_content("calculator", "main.py")
+calcget = get_file_content("calculator", "pkg/calculator.py")
+catget = get_file_content("calculator", "/bin/cat")
+
+print(loremget)
+print(mainget)
+print(calcget)
+print(catget)
