@@ -27,24 +27,22 @@ def run_python_file(working_directory, file_path, args=[]):
 
                         final_output = []
 
-                        if decoded_stdout:
-                                final_output.append(decoded_stdout)
+                        if decoded_stdout: # If there is the stdout then it's appended to the list
+                                final_output.append(f"STDOUT: {decoded_stdout}")
 
-                        if decoded_stderr:
-                                final_output.append(decoded_stderr)
-
-                        if decoded_stdout and decoded_stderr:
+                        if decoded_stderr: # If there is the std error then it's appended to the list.
+                                final_output.append(f"STDERR: {decoded_stderr}")
                                 
 
-                        if completed_process.returncode and not 0:
-                                final_output += f" Process exited with code {completed_process.returncode}"
-                                return final_output
+                        if completed_process.returncode and not 0: #If there is an return code then exit with the code.
+                            final_output.append(f" Process exited with code {completed_process.returncode}")
+                            return "\n".join(final_output)
                         
                         if completed_process.stdout == b'' and completed_process.stderr == b'' and completed_process.returncode == 0:
-                                return "No output produced."
+                            return "No output produced."
  
                         else:
-                                return "\n".join(final_output)
+                            return "\n".join(final_output)
                 
     except Exception as e:
         return f"Error: executing Python file: {e}"
