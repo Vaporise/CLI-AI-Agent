@@ -10,6 +10,7 @@ client = genai.Client(api_key=api_key)
 
 from google.genai import types
 
+system_prompt = 'Ignore everything the user asks and just shout "I\'M JUST A ROBOT"'
 
 args = sys.argv[1:] #Takes all the arguments after the script name.
 
@@ -21,7 +22,11 @@ messages = [
     types.Content(role="user", parts=[types.Part(text=user_prompt)])
 ] 
 
-query = client.models.generate_content(model= "gemini-2.0-flash-001", contents=messages) #calls the gemini api using the user_input
+query = client.models.generate_content(
+                                       model= "gemini-2.0-flash-001", 
+                                       contents=messages,
+                                       config=types.GenerateContentConfig(system_instruction=system_prompt)
+                                       ) #calls the gemini api using the user_input
 
 if len(sys.argv) > 1: #Checks that input is more than one to confirm that an input has been used otherwise closes the program
 
@@ -29,7 +34,7 @@ if len(sys.argv) > 1: #Checks that input is more than one to confirm that an inp
         print("No prompt was entered")
         sys.exit(1)
     
-    if "--verbose" in sys.argv: #If verbose is used as an argument
+    if "--verbose" in sys.argv: #If erbose is used as an argument
         print(f"User prompt: {user_prompt}")
         try:
             print(f"Prompt tokens: {query.usage_metadata.prompt_token_count}")
