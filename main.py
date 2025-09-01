@@ -34,50 +34,66 @@ user_prompt = " ".join(prompt_info) #rejoins the strings together.
 messages = [
     types.Content(role="user", parts=[types.Part(text=user_prompt)])
 ] 
+i = 0
+while i < 20 :
 
-query = client.models.generate_content(
-                                       model= "gemini-2.0-flash-001", 
-                                       contents=messages,
-                                       config=types.GenerateContentConfig(tools=[available_functions],system_instruction=system_prompt)
-                                       ) #calls the gemini api using the user_input
+    try:
+        query = client.models.generate_content(
+                                            model= "gemini-2.0-flash-001", 
+                                            contents=messages,
+                                            config=types.GenerateContentConfig(tools=[available_functions],system_instruction=system_prompt)
+                                            ) #calls the gemini api using the user_input
 
-if len(sys.argv) > 1: #Checks that input is more than one to confirm that an input has been used otherwise closes the program
+        for candidate in query.candidates:
+                messages.append(candidate.content)
 
-    if user_prompt == "": #If not input is entered
-        print("No prompt was entered")
-        sys.exit(1)
-    
-    if "--verbose" in sys.argv: #If erbose is used as an argument
-        print(f"User prompt: {user_prompt}")
-        try:
-            print(f"Prompt tokens: {query.usage_metadata.prompt_token_count}")
-        except AttributeError as e:
-            print(e)
-        try:
-            print(f"Response tokens: {query.usage_metadata.candidates_token_count}")
-        except AttributeError as t:
-            print(t)
+        if len(sys.argv) > 1: #Checks that input is more than one to confirm that an input has been used otherwise closes the program
 
-    if not query.function_calls:
-        print("Response:")
-        print(query.text)  #if verbose is not used and prompt is not empty it directly prints the LLM response
+            if user_prompt == "": #If not input is entered
+                print("No prompt was entered")
+                sys.exit(1)
+            
+            if "--verbose" in sys.argv: #If erbose is used as an argument
+                print(f"User prompt: {user_prompt}")
+                try:
+                    print(f"Prompt tokens: {query.usage_metadata.prompt_token_count}")
+                except AttributeError as e:
+                    print(e)
+                try:
+                    print(f"Response tokens: {query.usage_metadata.candidates_token_count}")
+                except AttributeError as t:
+                    print(t)
 
-    else:
-        for function_call_part in query.function_calls:
-            function_call_result = call_function(function_call_part, verbose="--verbose" in sys.argv)
+            if not query.function_calls:
+                print("Response:")
+                print(query.text)  #if verbose is not used and prompt is not empty it directly prints the LLM response
+                break
 
-            resp = function_call_result.parts[0].function_response.response
-            if resp is None:
-                raise RuntimeError("No function response in tool content")
+            else:
 
-            if "--verbose" in sys.argv:
-                print(f"-> {resp}")
+                for function_call_part in query.function_calls:
+                    function_call_result = call_function(function_call_part, verbose="--verbose" in sys.argv)
 
-    
-else:
-    print("No arguments were entered.")
-    sys.exit(1)
+                    resp = function_call_result.parts[0].function_response.response
+                    if resp is None:
+                        raise RuntimeError("No function response in tool content")
+                    
+                    resp_format = types.Content(role="user", parts=[types.Part.from_function_response(resp)])
+                    messages.append(resp_format)
 
+                    if "--verbose" in sys.argv:
+                        print(f"-> {resp}")
+
+
+
+            
+        else:
+            print("No arguments were entered.")
+            sys.exit(1)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+
+i += 1
 
 
 
