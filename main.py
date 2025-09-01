@@ -1,6 +1,7 @@
 import os, sys
 from dotenv import load_dotenv
 from functions.get_files_info import schema_get_files_info, available_functions
+from functions.call_function import call_function 
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -63,7 +64,14 @@ if len(sys.argv) > 1: #Checks that input is more than one to confirm that an inp
 
     else:
         for function_call_part in query.function_calls:
-            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+            function_call_result = call_function(function_call_part, verbose="--verbose" in sys.argv)
+
+            resp = function_call_result.parts[0].function_response.response
+            if resp is None:
+                raise RuntimeError("No function response in tool content")
+
+            if "--verbose" in sys.argv:
+                print(f"-> {resp}")
 
     
 else:
@@ -78,3 +86,5 @@ else:
 #print(query.usage_metadata)
 #print(type(query.usage_metadata))
 
+
+    

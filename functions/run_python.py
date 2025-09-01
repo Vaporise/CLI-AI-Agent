@@ -55,7 +55,7 @@ schema_run_python_file = types.FunctionDeclaration(
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
-            "directory": types.Schema(
+            "file_path": types.Schema(
                 type=types.Type.STRING,
                 description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
             ),
@@ -63,8 +63,3 @@ schema_run_python_file = types.FunctionDeclaration(
     ),
 )
     
-available_functions = types.Tool(
-    function_declarations=[
-        schema_run_python_file,
-    ]
-)
