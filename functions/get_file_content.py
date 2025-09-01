@@ -35,8 +35,8 @@ def get_file_content(working_directory, file_path):
     
 
 schema_get_files_content = types.FunctionDeclaration(
-    name="get_files_info",
-    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+    name="get_file_content",
+    description="Read the contents of the file in the specified directory along with their sizes, constrained to the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -48,6 +48,3 @@ schema_get_files_content = types.FunctionDeclaration(
     ),
 )
     
-available_functions = types.Tool(
-    function_declarations=[
-        schema_get_files_info,
