@@ -1,5 +1,6 @@
 import os, sys
 from dotenv import load_dotenv
+from functions.get_files_info import schema_get_files_info, available_functions
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -10,7 +11,15 @@ client = genai.Client(api_key=api_key)
 
 from google.genai import types
 
-system_prompt = 'Ignore everything the user asks and just shout "I\'M JUST A ROBOT"'
+system_prompt = """
+You are a helpful AI coding agent.
+
+When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
+
+- List files and directories
+
+All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+"""
 
 args = sys.argv[1:] #Takes all the arguments after the script name.
 
@@ -25,7 +34,7 @@ messages = [
 query = client.models.generate_content(
                                        model= "gemini-2.0-flash-001", 
                                        contents=messages,
-                                       config=types.GenerateContentConfig(system_instruction=system_prompt)
+                                       config=types.GenerateContentConfig(tools=[available_functions],system_instruction=system_prompt)
                                        ) #calls the gemini api using the user_input
 
 if len(sys.argv) > 1: #Checks that input is more than one to confirm that an input has been used otherwise closes the program
@@ -44,8 +53,14 @@ if len(sys.argv) > 1: #Checks that input is more than one to confirm that an inp
             print(f"Response tokens: {query.usage_metadata.candidates_token_count}")
         except AttributeError as t:
             print(t)
-    
-    print(query.text)  #if verbose is not used and prompt is not empty it directly prints the LLM response
+
+    if not query.function_calls:
+        print("Response:")
+        print(query.text)  #if verbose is not used and prompt is not empty it directly prints the LLM response
+
+    else:
+        for function_call_part in query.function_calls:
+            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
 
     
 else:
